@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+export const dynamic = 'force-dynamic';
 import { KpiCard } from "@/components/kpi-card";
 import { ScoreBadge } from "@/components/score-badge";
 
