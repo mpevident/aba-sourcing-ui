@@ -12,7 +12,7 @@ const STAGE_COLORS: Record<string, string> = {
 };
 
 function fmt(n: number | null) {
-  if (!n) return null;
+  if (n == null) return null;
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
   return `$${n}`;
@@ -36,7 +36,7 @@ export default function Pipeline() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-white text-2xl font-semibold">Pipeline</h1>
-        <p className="text-slate-400 text-sm mt-1">Drag deals through stages (click to move)</p>
+        <p className="text-slate-400 text-sm mt-1">Click a stage button on a card to move it</p>
       </div>
 
       <div className="grid grid-cols-5 gap-4">

@@ -1,18 +1,12 @@
-"use client";
 import { Search, Command } from "lucide-react";
-import { useEffect, useState } from "react";
+import { LiveTimestamp } from "@/components/live-timestamp";
+import { getScraperRows, summarize } from "@/lib/scrapers";
 
-function nowStamp() {
-  const d = new Date();
-  return d.toISOString().replace("T", " ").slice(0, 19) + "Z";
-}
-
-export function TopBar() {
-  const [stamp, setStamp] = useState(nowStamp());
-  useEffect(() => {
-    const t = setInterval(() => setStamp(nowStamp()), 1000);
-    return () => clearInterval(t);
-  }, []);
+export async function TopBar() {
+  const rows = await getScraperRows();
+  const { armed, total, tier } = summarize(rows);
+  const armedColor =
+    tier === "ok" ? "var(--positive)" : tier === "warn" ? "var(--warning)" : "var(--critical)";
 
   return (
     <div
@@ -27,9 +21,7 @@ export function TopBar() {
           </span>
         </div>
         <span style={{ color: "var(--text-4)" }}>·</span>
-        <span className="mono text-[10px] tracking-[0.1em] tnum" style={{ color: "var(--text-3)" }}>
-          {stamp}
-        </span>
+        <LiveTimestamp />
       </div>
 
       <div
@@ -52,13 +44,8 @@ export function TopBar() {
 
       <div className="flex items-center gap-3 mono text-[10px] tracking-[0.15em]">
         <div className="flex items-center gap-1.5">
-          <span style={{ color: "var(--text-3)" }}>SCRAPERS</span>
-          <span style={{ color: "var(--positive)" }}>5/5</span>
-        </div>
-        <span style={{ color: "var(--text-4)" }}>·</span>
-        <div className="flex items-center gap-1.5">
-          <span style={{ color: "var(--text-3)" }}>QUEUE</span>
-          <span style={{ color: "var(--data)" }} className="tnum">0</span>
+          <span style={{ color: "var(--text-3)" }}>SCRAPERS ARMED</span>
+          <span className="tnum" style={{ color: armedColor }}>{armed}/{total}</span>
         </div>
         <span style={{ color: "var(--text-4)" }}>·</span>
         <div className="flex items-center gap-1.5">

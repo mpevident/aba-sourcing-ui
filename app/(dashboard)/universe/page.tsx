@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 const MIDWEST = ["IL","OH","MI","IN","WI","MN","IA","MO","KS","NE","KY","ND","SD"];
 
 function fmt(n: number | null) {
-  if (!n) return "—";
+  if (n == null) return "—";
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
   return `$${n}`;

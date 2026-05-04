@@ -5,6 +5,8 @@ import { ScoreHistogram } from "@/components/score-histogram";
 import { SourceBar } from "@/components/source-bar";
 import { LeadTable } from "@/components/lead-table";
 import { ActivityFeed } from "@/components/activity-feed";
+import { ScraperHealth } from "@/components/scraper-health";
+import { ScheduledRuns } from "@/components/scheduled-runs";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -164,67 +166,8 @@ export default async function IntelligenceFeed() {
         </div>
         <div className="col-span-12 xl:col-span-4 flex flex-col gap-3">
           <ActivityFeed events={events} />
-
-          <div
-            className="p-4 flex flex-col gap-3"
-            style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
-          >
-            <span className="mono text-[10px] tracking-[0.18em]" style={{ color: "var(--text-3)" }}>
-              SYSTEM STATUS · OPENCLAW
-            </span>
-            <div className="flex flex-col gap-2.5 mono text-[11px]">
-              {[
-                { label: "GATEWAY", value: "ONLINE", state: "ok" as const, sub: "192.168.50.56:18789" },
-                { label: "SCRAPER · BIZQUEST", value: "ARMED", state: "ok" as const, sub: "playwright · standard proxy" },
-                { label: "SCRAPER · BUSINESSESFORSALE", value: "ARMED", state: "ok" as const, sub: "playwright · standard proxy" },
-                { label: "SCRAPER · BIZBUYSELL", value: "DEGRADED", state: "warn" as const, sub: "Akamai WAF · adaptive" },
-                { label: "SCRAPER · DEALSTREAM", value: "OFFLINE", state: "err" as const, sub: "Cloudflare 403" },
-                { label: "SCRAPER · BIZBEN", value: "OFFLINE", state: "err" as const, sub: "Cloudflare 403" },
-                { label: "TELEGRAM CHANNEL", value: "ONLINE", state: "ok" as const, sub: "@jarvis4378_bot · chat 249399734" },
-                { label: "ANTHROPIC SONNET-4.6", value: "AUTH OK", state: "ok" as const, sub: "primary scorer" },
-                { label: "OPENAI GPT-4O", value: "AUTH OK", state: "ok" as const, sub: "fallback scorer" },
-              ].map((r) => {
-                const c =
-                  r.state === "ok" ? "var(--positive)" :
-                  r.state === "warn" ? "var(--warning)" : "var(--critical)";
-                return (
-                  <div key={r.label} className="flex items-center justify-between gap-3" style={{ borderBottom: "1px solid var(--border-subtle)", paddingBottom: 8 }}>
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: c }} />
-                      <div className="flex flex-col min-w-0">
-                        <span className="tracking-[0.12em] truncate" style={{ color: "var(--text-2)" }}>{r.label}</span>
-                        <span className="text-[9.5px]" style={{ color: "var(--text-3)" }}>{r.sub}</span>
-                      </div>
-                    </div>
-                    <span className="text-[10px] tracking-[0.15em]" style={{ color: c }}>{r.value}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div
-            className="p-4 flex flex-col gap-2"
-            style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
-          >
-            <span className="mono text-[10px] tracking-[0.18em]" style={{ color: "var(--text-3)" }}>
-              NEXT SCHEDULED RUNS
-            </span>
-            <div className="flex flex-col gap-2 mono text-[11px]">
-              <div className="flex items-center justify-between">
-                <span style={{ color: "var(--text-2)" }}>06:00 CST · Phase 1 scrape</span>
-                <span className="tnum" style={{ color: "var(--data)" }}>T-12h 47m</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span style={{ color: "var(--text-2)" }}>07:00 CST · Telegram digest</span>
-                <span className="tnum" style={{ color: "var(--data)" }}>T-13h 47m</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span style={{ color: "var(--text-2)" }}>08:00 CST · Morning briefing</span>
-                <span className="tnum" style={{ color: "var(--data)" }}>T-14h 47m</span>
-              </div>
-            </div>
-          </div>
+          <ScraperHealth />
+          <ScheduledRuns />
         </div>
       </div>
     </div>
