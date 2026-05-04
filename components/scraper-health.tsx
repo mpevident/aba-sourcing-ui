@@ -2,6 +2,7 @@ import { getScraperRows, FRESH_HOURS, STALE_HOURS } from "@/lib/scrapers";
 
 export async function ScraperHealth() {
   const rows = await getScraperRows();
+  const anyInferred = rows.some((r) => r.source !== "run");
 
   return (
     <div
@@ -10,7 +11,7 @@ export async function ScraperHealth() {
     >
       <div className="flex items-center justify-between">
         <span className="mono text-[10px] tracking-[0.18em]" style={{ color: "var(--text-3)" }}>
-          SCRAPER HEALTH · BROKER LISTINGS
+          SCRAPER HEALTH
         </span>
         <span className="mono text-[9px] tracking-[0.15em]" style={{ color: "var(--text-3)" }}>
           {`<${FRESH_HOURS}h ARMED · <${STALE_HOURS / 24}d STALE`}
@@ -36,11 +37,28 @@ export async function ScraperHealth() {
                   <span className="text-[9.5px]" style={{ color: "var(--text-3)" }}>{r.reason}</span>
                 </div>
               </div>
-              <span className="text-[10px] tracking-[0.15em]" style={{ color: c }}>{r.label}</span>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {r.source !== "run" && (
+                  <span
+                    className="text-[8px] tracking-[0.18em] px-1 py-px"
+                    style={{ color: "var(--text-3)", border: "1px solid var(--border)" }}
+                    title="No scraper_runs entry — classified from broker_signals.first_seen_at"
+                  >
+                    INF
+                  </span>
+                )}
+                <span className="text-[10px] tracking-[0.15em]" style={{ color: c }}>{r.label}</span>
+              </div>
             </div>
           );
         })}
       </div>
+      {anyInferred && (
+        <span className="mono text-[9px]" style={{ color: "var(--text-3)" }}>
+          INF = inferred from listing ingest. Wire OpenClaw to{" "}
+          <span style={{ color: "var(--data)" }}>POST /api/scrapers/run</span> for real telemetry.
+        </span>
+      )}
     </div>
   );
 }
