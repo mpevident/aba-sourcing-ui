@@ -1,7 +1,14 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+
+const INPUT_STYLE: React.CSSProperties = {
+  background: "var(--bg-base)",
+  border: "1px solid var(--border)",
+  color: "var(--text-1)",
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -22,50 +29,80 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: "#0C0E14" }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg-base)" }}>
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white font-bold text-sm">A</div>
-            <span className="text-white font-semibold text-lg">ABA Intelligence</span>
+            <div
+              className="w-8 h-8 rounded flex items-center justify-center font-bold text-sm"
+              style={{ background: "rgba(77,217,230,0.10)", border: "1px solid var(--border-bright)", color: "var(--data)" }}
+            >
+              A
+            </div>
+            <span className="font-semibold text-lg" style={{ color: "var(--text-1)" }}>ABA Intelligence</span>
           </div>
-          <p className="text-slate-400 text-sm">CST Academy Sourcing Platform</p>
+          <p className="text-sm" style={{ color: "var(--text-3)" }}>CST Academy Sourcing Platform</p>
+        </div>
+
+        {/* Auth-disabled notice */}
+        <div
+          className="rounded-xl mb-4 px-4 py-3 mono text-[10.5px]"
+          style={{ background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--warning)" }}
+        >
+          <div className="tracking-[0.18em] text-[9px] mb-1" style={{ color: "var(--warning)" }}>
+            AUTH DISABLED
+          </div>
+          <p style={{ color: "var(--text-2)" }}>
+            The dashboard is currently open — sign-in is not enforced. Visit any URL directly.
+          </p>
+          <Link
+            href="/"
+            className="inline-block mt-2 mono text-[10px] tracking-[0.15em]"
+            style={{ color: "var(--data)" }}
+          >
+            CONTINUE TO INTEL FEED →
+          </Link>
         </div>
 
         {/* Card */}
-        <div className="rounded-xl border p-8" style={{ background: "#161B27", borderColor: "#2A3347" }}>
-          <h1 className="text-white font-semibold text-xl mb-6">Sign in</h1>
+        <div className="rounded-xl p-8" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+          <h1 className="font-semibold text-xl mb-6" style={{ color: "var(--text-1)" }}>Sign in</h1>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm text-slate-400 mb-1.5">Email</label>
+              <label className="block text-sm mb-1.5" style={{ color: "var(--text-3)" }}>Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                className="w-full px-3 py-2.5 rounded-lg text-white text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                style={{ background: "#0C0E14", border: "1px solid #2A3347" }}
+                className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
+                style={INPUT_STYLE}
                 placeholder="you@company.com"
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-1.5">Password</label>
+              <label className="block text-sm mb-1.5" style={{ color: "var(--text-3)" }}>Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full px-3 py-2.5 rounded-lg text-white text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                style={{ background: "#0C0E14", border: "1px solid #2A3347" }}
+                className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
+                style={INPUT_STYLE}
                 placeholder="••••••••"
               />
             </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
+            {error && <p className="text-sm" style={{ color: "var(--critical)" }}>{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm transition-colors disabled:opacity-50"
+              className="w-full py-2.5 rounded-lg font-medium text-sm transition-opacity disabled:opacity-50"
+              style={{
+                background: "var(--bg-base)",
+                border: "1px solid var(--border-bright)",
+                color: "var(--data)",
+              }}
             >
               {loading ? "Signing in..." : "Sign in"}
             </button>
