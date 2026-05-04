@@ -82,6 +82,50 @@ EMAIL_INGEST_SECRET=<random shared secret>      # required for Gmail / forwarder
 | `scraper_runs` | First-class OpenClaw run history (start / finish / metrics) | created by `supabase/migrations/20260504000004_scraper_runs.sql`; written by `POST /api/scrapers/run`; surfaced on `/settings` (Recent Runs panel), feeds `ScraperHealth` |
 | `inbound_emails` | Phase 4 inbox triage landing zone (broker email blasts) | created by `supabase/migrations/20260504000008_inbound_emails.sql`; written by `POST /api/webhooks/email`; not yet surfaced (classifier + UI follow-on) |
 
+## Scraping
+
+A minimal Apify-based orchestrator lives in `scripts/scrape/`. It triggers configured Apify actors per source, normalizes results, filters to ABA-relevant listings, upserts into `broker_signals` (via the service-role admin client), and reports run telemetry to `POST /api/scrapers/run` so the dashboard's `ScraperHealth` panel reflects real metrics.
+
+### Setup
+
+In `.env.local`:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<publishable or legacy anon key>
+
+# server-only
+SUPABASE_SERVICE_ROLE_KEY=<service role key>
+SCRAPER_INGEST_SECRET=<random shared secret>
+APIFY_API_TOKEN=<your apify token>
+
+# per-source actor IDs (set whichever you've configured in Apify)
+APIFY_ACTOR_BIZBUYSELL=<actor id>
+APIFY_ACTOR_BIZQUEST=<actor id>
+APIFY_ACTOR_DEALSTREAM=<actor id>
+APIFY_ACTOR_BUSINESSESFORSALE=<actor id>
+APIFY_ACTOR_BIZBEN=<actor id>
+
+# optional
+UI_BASE_URL=http://localhost:3000   # where /api/scrapers/run lives
+```
+
+### Run
+
+Dev server must be up (or pointed at via `UI_BASE_URL`) for the telemetry POST to succeed:
+
+```
+npm run dev          # one terminal
+npm run scrape -- bizbuysell   # another terminal
+npm run scrape -- all          # all configured sources
+```
+
+Sources without `APIFY_ACTOR_<SOURCE>` set are skipped with a clear "no actor configured" message and an `error` row in `scraper_runs`. Sources whose Apify run fails leave an `error` row with the underlying message.
+
+### Production cadence
+
+The same orchestrator can run on Jarvis under OpenClaw (per the master spec, daily 06:00 Central). Drop it into your OpenClaw cron job — it's pure Node, no Next runtime needed.
+
 ## Auth
 
 Currently **disabled** — `proxy.ts` (renamed from the deprecated `middleware.ts` per Next 16) no-ops while we iterate. The original Supabase-auth-enforcing middleware lives in git history (commit `52781b4`) and a login page exists at `/login`. To re-enable, port the body of that middleware into `proxy.ts` and rename the export from `middleware` to `proxy`.
