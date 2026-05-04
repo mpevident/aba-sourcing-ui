@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { Activity, Database, GitCommit, Radar } from "lucide-react";
 
 interface ActivityEvent {
@@ -9,6 +10,7 @@ interface ActivityEvent {
   detail?: string;
   state?: string | null;
   score?: number | null;
+  href?: string;
 }
 
 function relTime(iso: string) {
@@ -46,10 +48,13 @@ export function ActivityFeed({ events, title = "ACTIVITY · LIVE STREAM" }: { ev
         {events.map((e) => {
           const meta = KIND_META[e.kind] || KIND_META.signal;
           const Icon = meta.icon;
+          const Wrapper: any = e.href ? Link : "div";
+          const wrapperProps: any = e.href ? { href: e.href } : {};
           return (
-            <div
+            <Wrapper
               key={e.id}
-              className="px-4 py-2.5 flex items-start gap-3 transition-colors hover:cursor-pointer"
+              {...wrapperProps}
+              className="px-4 py-2.5 flex items-start gap-3 transition-colors hover:cursor-pointer hover:bg-white/[0.02]"
               style={{ borderBottom: "1px solid var(--border-subtle)" }}
             >
               <div className="flex flex-col items-center pt-0.5">
@@ -85,7 +90,7 @@ export function ActivityFeed({ events, title = "ACTIVITY · LIVE STREAM" }: { ev
                   {Math.round(e.score)}
                 </span>
               )}
-            </div>
+            </Wrapper>
           );
         })}
       </div>

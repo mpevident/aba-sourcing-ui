@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { ScoreBadge } from "./score-badge";
 import { ExternalLink } from "lucide-react";
 
@@ -14,6 +15,7 @@ interface Lead {
   score: number | null;
   cst_fit: boolean | null;
   status: string | null;
+  practice_id?: string | null;
 }
 
 function fmt(n: number | null): string {
@@ -57,18 +59,34 @@ export function LeadTable({ rows, title = "TOP LEADS · RANKED BY SCORE" }: { ro
               </td>
             </tr>
           )}
-          {rows.map((r, i) => (
+          {rows.map((r, i) => {
+            const isHighFit = (r.score ?? 0) >= 70;
+            return (
             <tr
               key={r.id}
               className="hover:bg-[var(--bg-card-hover)] transition-colors"
-              style={{ borderBottom: "1px solid var(--border-subtle)" }}
+              style={{
+                borderBottom: "1px solid var(--border-subtle)",
+                borderLeft: isHighFit ? "2px solid var(--positive)" : "2px solid transparent",
+                background: isHighFit ? "rgba(74,222,128,0.025)" : undefined,
+              }}
             >
               <td className="px-3 py-2.5 tnum" style={{ color: "var(--text-3)" }}>{String(i+1).padStart(2,'0')}</td>
               <td className="px-3 py-2.5"><ScoreBadge score={r.score} /></td>
               <td className="px-3 py-2.5 max-w-[320px]">
-                <div className="font-sans text-[12px] truncate" style={{ color: "var(--text-1)" }}>
-                  {r.listing_title || "—"}
-                </div>
+                {r.practice_id ? (
+                  <Link
+                    href={`/practice/${r.practice_id}`}
+                    className="font-sans text-[12px] truncate block hover:opacity-80"
+                    style={{ color: "var(--text-1)" }}
+                  >
+                    {r.listing_title || "—"}
+                  </Link>
+                ) : (
+                  <div className="font-sans text-[12px] truncate" style={{ color: "var(--text-1)" }}>
+                    {r.listing_title || "—"}
+                  </div>
+                )}
                 {r.location_city && (
                   <div className="text-[10px] mt-0.5" style={{ color: "var(--text-3)" }}>
                     {r.location_city}{r.location_state ? `, ${r.location_state}` : ""}
@@ -106,7 +124,8 @@ export function LeadTable({ rows, title = "TOP LEADS · RANKED BY SCORE" }: { ro
                 )}
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>
